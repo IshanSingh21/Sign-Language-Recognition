@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Real-time ASL Sign Language Recognition using hand tracking — works instantly in your browser, no training required.">
+    <title>ASL Sign Language Recognition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h2 class="loading-title">Loading MediaPipe</h2>
+            <p class="loading-subtitle">Preparing hand tracking model...</p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="app-layout" id="appLayout">
+        <!-- Header -->
+        <header class="header" id="header">
+            <div class="header-left">
+                <span class="logo-icon">🤟</span>
+                <h1 class="logo-text">ASL Sign Language</h1>
+            </div>
+            <div class="header-center">
+                <span class="status-dot" id="statusDot"></span>
+                <span class="status-text" id="statusText">Initializing...</span>
+            </div>
+            <div class="header-right">
+                <span class="fps-label">FPS</span>
+                <span class="fps-value" id="fpsValue">--</span>
+            </div>
+        </header>
+
+        <!-- Webcam Area -->
+        <div class="webcam-container" id="webcamContainer">
+            <video id="webcamVideo" autoplay playsinline muted></video>
+            <canvas id="landmarkCanvas"></canvas>
+            <div class="webcam-badge" id="webcamBadge">
+                <span class="webcam-badge-dot"></span>
+                LIVE
+            </div>
+            <div class="no-hand-overlay" id="noHandOverlay">
+                <div class="no-hand-content">
+                    <span class="no-hand-icon">🖐️</span>
+                    <p>Show your hand to the camera</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Prediction Panel -->
+            <div class="panel prediction-panel">
+                <span class="prediction-label">Detected Sign</span>
+                <div class="prediction-value" id="predictionValue">—</div>
+                <span class="prediction-subtext" id="predictionSubtext">Waiting for hand...</span>
+            </div>
+
+            <!-- Confidence Panel -->
+            <div class="panel confidence-panel">
+                <div class="confidence-header">
+                    <span class="confidence-label">Confidence</span>
+                    <span class="confidence-value" id="confidenceValue">0%</span>
+                </div>
+                <div class="confidence-bar-track">
+                    <div class="confidence-bar-fill" id="confidenceBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Stability Panel -->
+            <div class="panel stability-panel">
+                <div class="stability-header">
+                    <span class="stability-label">Stability</span>
+                    <span class="stability-status" id="stabilityStatus">—</span>
+                </div>
+                <div class="stability-dots" id="stabilityDots">
+                    <span class="stability-dot"></span>
+                    <span class="stability-dot"></span>
+                    <span class="stability-dot"></span>
+                    <span class="stability-dot"></span>
+                    <span class="stability-dot"></span>
+                    <span class="stability-dot"></span>
+                    <span class="stability-dot"></span>
+                    <span class="stability-dot"></span>
+                    <span class="stability-dot"></span>
+                    <span class="stability-dot"></span>
+                </div>
+            </div>
+
+            <!-- Reference Panel -->
+            <div class="panel reference-panel">
+                <span class="reference-title">Quick Reference</span>
+                <div class="sign-grid" id="signGrid">
+                    <div class="sign-card" data-sign="A">✊ A</div>
+                    <div class="sign-card" data-sign="B">🖐 B</div>
+                    <div class="sign-card" data-sign="C">🤏 C</div>
+                    <div class="sign-card" data-sign="D">☝️ D</div>
+                    <div class="sign-card" data-sign="F">👌 F</div>
+                    <div class="sign-card" data-sign="I">🤙 I</div>
+                    <div class="sign-card" data-sign="L">🤞 L</div>
+                    <div class="sign-card" data-sign="O">⭕ O</div>
+                    <div class="sign-card" data-sign="V">✌️ V</div>
+                    <div class="sign-card" data-sign="W">🤟 W</div>
+                    <div class="sign-card" data-sign="Y">🤙 Y</div>
+                    <div class="sign-card" data-sign="ILY">🤟 ILY</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Sentence Bar -->
+        <div class="sentence-bar">
+            <div class="sentence-content">
+                <span class="sentence-label">Sentence</span>
+                <div class="sentence-text-wrapper">
+                    <span class="sentence-text" id="sentenceText"></span>
+                    <span class="sentence-cursor"></span>
+                </div>
+            </div>
+            <div class="sentence-controls">
+                <kbd>Space</kbd> Add &nbsp;
+                <kbd>⌫</kbd> Delete &nbsp;
+                <kbd>C</kbd> Clear
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
