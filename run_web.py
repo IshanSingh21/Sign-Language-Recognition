@@ -1,6 +1,9 @@
+from pyexpat import features
+
 from flask import Flask, request, jsonify, send_from_directory
 import os
 import joblib
+from tensorflow.keras.models import load_model
 import numpy as np
 
 from utils import FeatureExtractor
@@ -19,14 +22,14 @@ MODELS_DIR = os.path.join(BASE_DIR, "models")
 # Load trained model artifacts
 # --------------------------------------------------
 
-MODEL_PATH = os.path.join(MODELS_DIR, "best_model.pkl")
+MODEL_PATH = os.path.join(MODELS_DIR, "mlp_model.keras")
 SCALER_PATH = os.path.join(MODELS_DIR, "scaler.pkl")
 ENCODER_PATH = os.path.join(MODELS_DIR, "label_encoder.pkl")
 
 
 print("Loading trained model...")
 
-model = joblib.load(MODEL_PATH)
+model = load_model(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)
 label_encoder = joblib.load(ENCODER_PATH)
 
@@ -93,22 +96,21 @@ def predict():
                 "success": False,
                 "error": "Feature extraction failed."
             }), 400
-
-        # Scale using the SAME scaler used during training
+        
+        # Scale features using the trained scaler
         features_scaled = scaler.transform([features])
 
-        # SVM prediction
-        prediction = model.predict(features_scaled)[0]
+        # Keras MLP prediction
+        probabilities = model.predict(features_scaled, verbose=0)[0]
+
+        # Get predicted class index
+        prediction = int(np.argmax(probabilities))
 
         # Convert encoded class number to actual label
         label = label_encoder.inverse_transform([prediction])[0]
 
-        # SVM was trained with probability=True
-        confidence = 0.0
-
-        if hasattr(model, "predict_proba"):
-            probabilities = model.predict_proba(features_scaled)[0]
-            confidence = float(np.max(probabilities))
+        # Confidence = highest class probability
+        confidence = float(np.max(probabilities))
 
         return jsonify({
             "success": True,
@@ -144,8 +146,10 @@ if __name__ == "__main__":
     print("Press CTRL+C to stop.")
     print("=" * 60)
 
+    port = int(os.environ.get("PORT", 5000))
+
     app.run(
-        host="127.0.0.1",
-        port=5000,
+        host="0.0.0.0",
+        port=port,
         debug=False
     )
