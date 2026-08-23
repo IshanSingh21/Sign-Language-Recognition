@@ -29,7 +29,7 @@ ENCODER_PATH = os.path.join(MODELS_DIR, "label_encoder.pkl")
 
 print("Loading trained model...")
 
-model = load_model(MODEL_PATH)
+model = load_model(MODEL_PATH, compile=False)
 scaler = joblib.load(SCALER_PATH)
 label_encoder = joblib.load(ENCODER_PATH)
 
@@ -101,7 +101,7 @@ def predict():
         features_scaled = scaler.transform([features])
 
         # Keras MLP prediction
-        probabilities = model.predict(features_scaled, verbose=0)[0]
+        probabilities = model(features_scaled, training=False).numpy()[0]
 
         # Get predicted class index
         prediction = int(np.argmax(probabilities))
