@@ -38,7 +38,7 @@ const webcamBadge = document.getElementById('webcamBadge');
 let handLandmarker = null;
 let predictionInProgress = false;
 let lastPredictionTime = 0;
-const PREDICTION_INTERVAL = 1000;
+const PREDICTION_INTERVAL = 200;
 let smoother = new PredictionSmoother(10);
 
 let sentence = "";

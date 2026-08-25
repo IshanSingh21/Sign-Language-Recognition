@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, send_from_directory
 import os
 import joblib
 from tensorflow.keras.models import load_model
+import tensorflow as tf
 import numpy as np
 
 from utils import FeatureExtractor
@@ -28,6 +29,9 @@ ENCODER_PATH = os.path.join(MODELS_DIR, "label_encoder.pkl")
 
 
 print("Loading trained model...")
+
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
 
 model = load_model(MODEL_PATH, compile=False)
 scaler = joblib.load(SCALER_PATH)
@@ -86,7 +90,7 @@ def predict():
             }), 400
 
         # Convert landmarks to numpy array
-        landmarks = np.array(landmarks, dtype=np.float64)
+        landmarks = np.array(landmarks, dtype=np.float32)
 
         # Extract the SAME 93 features used during training
         features = feature_extractor.extract(landmarks)
